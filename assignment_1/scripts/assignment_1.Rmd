@@ -1,0 +1,74 @@
+---
+title: 'Assignment 1: Tree Census in NY, 2005 - 2015'
+author: "Alfredo Rojas"
+date: "1/31/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Explore Tree Census data for 2005
+
+```{r library results = "hide", message = FALSE}
+
+library(tidyverse)
+library(sf)
+path_to_file = file.path("..", "data", "2005_Street_Tree_Census.csv")
+tree_2005 = path_to_file %>% read_csv()
+```
+
+## Explore data
+
+Clean up the data using `group_by()` and `summarise()`. 
+
+```{r clean}
+head(tree_2005)
+
+byBoro = tree_2005 %>%
+  count(nta_name, boroname, spc_common, status, sort = TRUE)
+
+head(byBoro, n = 10)
+  
+```
+
+Let's visualize
+
+```{r visual}
+
+byBoro %>% ggplot() +
+  geom_bar(aes(x = boroname, fill = status), position = "dodge") +
+  coord_flip()
+```
+
+More visuals
+
+```{r visual2}
+
+treeLocs = tree_2005 %>%
+  select(OBJECTID, spc_common, nta_name, boroname, latitude, longitude)
+
+
+
+```
+
+
+### notes
+
+-Distribution of Income by borough. . . 
+
+Positives: Narrative, single-variable representation of tree density
+
+Negatives: Assumed spatial knowledge of NY, forces the comparison between borough (which by nautre means that income is segmented by boroughts), unclear whether red/green gradation of borough map is is within borough or total area. . . No legend determining intervals. . . 
+
+To-do: 
+(1) do a graph of distribution of income by borough. . . 
+(2) do a map based on neighborhood. . . 
+
+--Finding income data
+--Finding neighborhood data
+
+Tasks:
+--Normalize by greenspace
+--
