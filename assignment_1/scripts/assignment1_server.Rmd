@@ -1,7 +1,7 @@
 ---
-title: 'Assignment 1: Tree Census in NY, 2005 - 2015'
+title: 'Assignment 1: NY Tree Census, 2005-2015'
 author: "Alfredo Rojas"
-date: "1/31/2020"
+date: "2/2/2020"
 output: html_document
 ---
 
@@ -15,7 +15,7 @@ Explore Tree Census data for 2005
 
 library(tidyverse)
 library(sf)
-path_to_file = file.path("..", "data", "2005_Street_Tree_Census.csv")
+path_to_file = file.path("..", "data", "ny_trees2005.csv")
 tree_2005 = path_to_file %>% read_csv()
 ```
 
@@ -30,7 +30,6 @@ byBoro = tree_2005 %>%
   count(nta_name, boroname, spc_common, status, sort = TRUE)
 
 head(byBoro, n = 10)
-  
 ```
 
 Let's visualize
@@ -45,14 +44,26 @@ byBoro %>% ggplot() +
 We can plot trees individually, but it takes a very long time. Probably because we have greater than 250,000 observations (lat/long points). Maybe this is not such a great idea. 
 
 ```{r visual2}
-
 library(tmap)
 
+# get location data
 treeLocs = tree_2005 %>%
-  select(OBJECTID, spc_common, nta, nta_name, boroname, latitude, longitude)
+  select(OBJECTID, spc_common, nta, nta_name, boroname, latitude, longitude) %>%
+  filter(boroname != 5) 
 
+# get tree coordinates
 tree_coord = unique(treeLocs[,c("latitude", "longitude")]) %>%
   rename(Longitude = longitude, Latitude = latitude)
+
+# see how many unique object ids there are. 
+treeLocs$OBJECTID %>%
+  unique() %>%
+  length()
+
+# get amount of trees per NTA code
+tree_num = treeLocs %>%
+  group_by(nta) %>%
+  summarise(num = n())
 
 # set points with WGS1984 coordinate system
 coord_proj = tree_coord %>% 
@@ -68,14 +79,22 @@ st_crs(ny2)
 
 tm_shape(ny) +
   tm_fill() +
-  tm_borders() +
-  tm_shape(coord_proj) +
-  tm_dots(col = "green",
-          alpha = 1/3)
+  tm_borders() 
 
-ny_tree = left_join(ny2, treeLocs, by = c("NTACode" = "nta")) 
+ny_tree = left_join(ny2, tree_num, by = c("NTACode" = "nta")) %>%
+  mutate(normalized = scale(num, center = FALSE))
 
 
+plot(st_geometry(ny_tree), col = ny_tree$normalized)
+
+m1 = ggplot(ny_tree) + 
+  geom_sf(aes(fill = normalized))
+
+m2 = m1 + geom_polygon(color = "gray90", size = 0.05) + coord_equal()
+
+m3 = m2 + scale_fill_brewer(palette = "Greens")
+m3
+m1
 ```
 
 
