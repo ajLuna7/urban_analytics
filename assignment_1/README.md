@@ -4,4 +4,4 @@ This project focuses on the tree census data in New York city from 2005. The pri
 
 We rely on a blog from IQuantNY visualizing tree census data and exploring correlations between median income and tree density (defined by number of trees normalized by total length of streets per neighborhood tabuation area and then standaridized). 
 
-HTML output is the final report. 
+To read final report, see: https://github.com/ajrojas1/urban-analytics/blob/master/assignment_1/results/a1_paper.md 
