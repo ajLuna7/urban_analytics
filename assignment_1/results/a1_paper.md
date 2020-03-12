@@ -44,13 +44,23 @@ According to the author’s analysis, red pixels represent areas of more
 trees. The author created maps for all burroughs: Brooklyn, Manhattan,
 Queens, Staten Island, and Bronx.
 
+##### Brooklyn tree map by original author
+
 ![Brooklyn tree map by original author](brooklyn_tree_orig.jpg)
+
+##### Manhattan tree map by original author
 
 ![Manhattan tree map by original author](manhattan_tree_orig.jpg)
 
+##### Queens tree map by original author
+
 ![Queens tree map by original author](queens_tree_original.jpg)
 
+##### Staten Island tree map by original author
+
 ![Staten Island tree map by original author](staten_tree_orig.jpg)
+
+##### Bronx tree map by original author
 
 ![Bronx tree map by original author](bronx_tree_orig.jpg)
 

@@ -21,14 +21,19 @@ We and the author utilized the 2005 Tree Census dataset. Dataset collection was 
 
 We begin by presenting examples of the author's heat maps of tree density around NYC boroughs. [Heat maps](https://www.investopedia.com/terms/h/heatmap.asp) are defined as gridded datasets where individual values are represented with colors. These heat maps were created in QGIS using the open Tree Census data. According to the author's analysis, red pixels represent areas of more trees. The author created maps for all burroughs: Brooklyn, Manhattan, Queens, Staten Island, and Bronx. 
 
+##### Brooklyn tree map by original author
 ![Brooklyn tree map by original author](brooklyn_tree_orig.jpg)
 
+##### Manhattan tree map by original author
 ![Manhattan tree map by original author](manhattan_tree_orig.jpg)
 
+##### Queens tree map by original author
 ![Queens tree map by original author](queens_tree_original.jpg)
 
+##### Staten Island tree map by original author
 ![Staten Island tree map by original author](staten_tree_orig.jpg)
 
+##### Bronx tree map by original author
 ![Bronx tree map by original author](bronx_tree_orig.jpg)
 
 All maps give us a sense of the spatial distribution of trees. Without the author's indication of red meaning more trees, however, the reader is at a loss about what these colors mean since Willington does not provide a legend. For instance, Willington tells us red means more, but what of yellow and green? Are readers left to assume in what direction these colors diverge? 
