@@ -123,18 +123,24 @@ subset_hh %>%
 # ggsave("rural_urban_bar.png", dpi = 300)
 ```
 
+![bar plot](rural_urban_bar.png)
+
 I can start looking at the distribution of certain variables of
 interest. Let me start with number of household members per each
 household observed.
 
 ``` r
-d = subset_hh$num_hh_mem %>%
-  density()
-
-plot(d)
+ggplot(subset_hh, aes(num_hh_mem)) +
+  geom_density()
 ```
 
 ![](rojas_finalEDA_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+# ggsave("hh_density.png", dpi = 300)
+```
+
+![hh\_density](hh_density.png)
 
 Now, I’ll look at agricultural area in hectares for each household that
 has a farm.
@@ -144,15 +150,17 @@ d2 = subset_hh %>%
   filter(is.na(ag_area) != TRUE) %>%
   select(ag_area)
 
-density(d2$ag_area) %>%
-  plot()
+ggplot(d2, aes(ag_area)) +
+  geom_density()
 ```
 
 ![](rojas_finalEDA_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
-# ggsave("ag_density.png", dpi = 300)
+# ggsave("ag_dens.png", dpi = 300)
 ```
+
+![density1](ag_dens.png)
 
 Also, I can look at the relationship between the two variables.
 
@@ -169,6 +177,8 @@ subset_hh %>%
 ``` r
 # ggsave("ag_hh_compare.png", dpi = 300)
 ```
+
+![compare1](ag_hh_compare.png)
 
 The DHS has another variable that may be of interest: Wealth Index. This
 index apparently measures the relative wealth of households and
@@ -187,6 +197,8 @@ subset_hh %>%
 # ggsave("ag_wealth.png", dpi = 300)
 ```
 
+![barplot2](ag_wealth.png)
+
 One thing that may be of interest is looking at the distribution of
 agricultural area by wealth category to see variation within a variable.
 The spread of the data is interesting. The different catgories seem to
@@ -204,6 +216,8 @@ subset_hh %>%
 ``` r
 # ggsave("ag_wealth_density.png", dpi = 300)
 ```
+
+![density2](ag_wealth_density.png)
 
 From this analysis, I will rely on the availale DHS data variables to
 understnd their impact on food security. Food security indicators will
