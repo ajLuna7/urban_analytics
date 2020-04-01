@@ -2,7 +2,7 @@
 title: 'HW4: Scraping Craigslist, PLAN 672'
 author: "Alfredo Rojas"
 date: "2/17/2020"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -103,17 +103,17 @@ for(i in locations){
   
   
   # help from https://gis.stackexchange.com/questions/323698/counting-points-in-polygons-with-sf-package-of-r
-  latlon_buffer$pt_count <- latlon_buffer %>%
+  latlon_buffer$pt_count = latlon_buffer %>%
     st_intersects(rstnt_osm) %>%
     lengths() # adds a list of values corresponding to amount of buffers 
   
   # "Walk Score" based on number of restaurants within each 5000ft buffer
-  latlon_buffer$pt_scale <- latlon_buffer$pt_count %>%
+  latlon_buffer$pt_scale = latlon_buffer$pt_count %>%
     scale(center = TRUE)
   
   # create new variables using assign()
-  counter <- counter + 1
-  my_var <- paste0("df_", locations[counter]) # index needs numeric not character
+  counter = counter + 1
+  my_var = paste0("df_", locations[counter]) # index needs numeric not character
   assign(my_var, latlon_buffer)
   
 }
@@ -133,7 +133,7 @@ Plotting Walk Scores in an interactive map, for Raleigh-Durham, we can see the s
 ```{r viz2}
 
 # help from: https://cengel.github.io/R-spatial/mapping.html
-popup_info <- paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_raleigh$pt_scale, 3))
+popup_info = paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_raleigh$pt_scale, 3))
 
 leaflet(st_transform(df_raleigh, crs = 4326)) %>% 
   addProviderTiles(providers$Stamen.TonerLines, group = "Basemap") %>%
@@ -147,14 +147,14 @@ leaflet(st_transform(df_raleigh, crs = 4326)) %>%
 Let's take a look at Greensboro and Winston-Salem. 
 
 ```{r}
-popup_info2 <- paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_greensboro$pt_scale, 3))
+popup_info2 = paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_greensboro$pt_scale, 3))
 
 leaflet(st_transform(df_greensboro, crs = 4326)) %>% 
   addProviderTiles(providers$Stamen.TonerLines, group = "Basemap") %>%
   addProviderTiles(providers$Stamen.TonerLite, group = "Basemap") %>%
   addPolygons(popup = popup_info2)
 
-popup_info3 <- paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_winstonsalem$pt_scale, 3))
+popup_info3 = paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_winstonsalem$pt_scale, 3))
 
 leaflet(st_transform(df_winstonsalem, crs = 4326)) %>% 
   addProviderTiles(providers$Stamen.TonerLines, group = "Basemap") %>%
