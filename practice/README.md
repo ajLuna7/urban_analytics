@@ -1,6 +1,6 @@
 ## Practice Homework Problems for Class
 
-These files are solely practice problems from our PLAN 672 class. These are mostly incomplete rough drafts and are posted to this repository to save them so that I may improve upon them in the future. I plan to return to these practice problem sets after the semester to build upon methods, improve visualizations, and modify the coding style.
+These files are solely practice problems from our PLAN 672 class. These are mostly incomplete rough drafts. I primarily posted these to this repository to save them so that I may improve upon them in the future. I plan to return to these practice problems after the semester to build upon methods, improve visualizations, and modify the coding style.
  
 The links to the various markdown outputs can be found here:
 
