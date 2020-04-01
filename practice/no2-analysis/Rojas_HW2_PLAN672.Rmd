@@ -2,7 +2,9 @@
 title: 'PLAN 672 Homework 2: NO2 Analysis'
 author: "Alfredo Rojas"
 date: "1/20/2020"
-output: html_document
+output: 
+  html_document: default
+  github_document: default
 ---
 
 ```{r setup, include=FALSE}
