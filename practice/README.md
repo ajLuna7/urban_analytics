@@ -8,4 +8,4 @@ The links to the various markdown outputs can be found here:
 
 *[Web Scraping Craigslist Example](https://github.com/ajrojas1/urban-analytics/blob/master/practice/web-scraping-craigslist/Rojas_HW4.md)
 
-*[Land Use Suiability](https://github.com/ajrojas1/urban-analytics/blob/master/practice/land-use-suitability/Rojas_HW6.md) 
+*[Land Use Suitability](https://github.com/ajrojas1/urban-analytics/blob/master/practice/land-use-suitability/Rojas_HW6.md) 
