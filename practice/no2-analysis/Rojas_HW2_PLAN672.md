@@ -29,8 +29,8 @@ library(dplyr)
 library(plotly)
 library(tmaptools)
 # read in data
-path_to_file = file.path("data", "daily_42602_2017.csv")
-data_no2 = read_csv(path_to_file)
+path_to_file <- file.path("data", "daily_42602_2017.csv")
+data_no2 <- read_csv(path_to_file)
 ```
 
 Let us explore the structure of this
@@ -86,13 +86,14 @@ Nikhil Kaza’s
 
 ``` r
 # create fips
-data_no2$st_cty_fips = paste(formatC(data_no2$`State Code`, width = 2, flag = "0"), 
+data_no2$st_cty_fips <- paste(formatC(data_no2$`State Code`, width = 2, flag = "0"), 
                              formatC(data_no2$`County Code`, width = 3, flag ="0"),
                              sep = "")
 
 # Select columns that are most relevant, and we can rename them at the same time
-no2_subset = data_no2 %>%
-  select('st_cty_fips', site_num = 'Site Num',lat = 'Latitude', long = 'Longitude', 
+no2_subset <- data_no2 %>%
+  select('st_cty_fips', site_num = 'Site Num',
+         lat = 'Latitude', long = 'Longitude', 
          date_loc = 'Date Local', state_name = 'State Name', 
          county_name = 'County Name', cbsa_name = 'CBSA Name', 'AQI') %>%
   mutate(SiteID = paste(st_cty_fips, site_num, sep = "_"))
@@ -136,7 +137,7 @@ arrange(no2_subset, desc(AQI)) %>%
     ## # … with 3 more variables: cbsa_name <chr>, AQI <dbl>, SiteID <chr>
 
 ``` r
-natl_100 = no2_subset %>%
+natl_100 <- no2_subset %>%
   group_by(st_cty_fips, date_loc, SiteID) %>%
   summarise(n = n(),
             gt100 = AQI >= 100, 
@@ -155,7 +156,7 @@ statistics. We can even focus on a specific state. Because I am from
 Florida, I will be exploring AQI values across Florida first.
 
 ``` r
-florida_no2 = no2_subset %>%
+florida_no2 <- no2_subset %>%
   filter(state_name == "Florida") %>%
   group_by(st_cty_fips, date_loc, SiteID) %>%
   summarise(n = n(),
@@ -190,7 +191,7 @@ another. Let’s try the same visualizaiton for North Carolina.
 
 ``` r
 # summary and plot for North Carolina
-nc_no2 = no2_subset %>%
+nc_no2 <- no2_subset %>%
   filter(state_name == "North Carolina") %>%
   group_by(st_cty_fips, date_loc, SiteID) %>%
   summarise(n = n(),
@@ -223,7 +224,7 @@ Now, let’s look at California.
 
 ``` r
 # summary and plot for california
-cal_no2 = no2_subset %>%
+cal_no2 <- no2_subset %>%
   filter(state_name == "California") %>%
   group_by(st_cty_fips, date_loc, SiteID) %>%
   summarise(n = n(),
@@ -256,7 +257,7 @@ a national level.
 
 ``` r
 # take original data and group_by states to count counties
-nat_sum = no2_subset %>%
+nat_sum <- no2_subset %>%
   group_by(state_name) %>%
   summarise(
     n = n(),
@@ -308,12 +309,14 @@ data(fips_codes)
 names(fips_codes)
 
 # combine state and county codes
-fips_codes$st_cty_fips = paste(formatC(fips_codes$state_code, width = 2, flag = "0"), 
-                             formatC(fips_codes$county_code, width = 3, flag ="0"),
-                             sep = "")
+fips_codes$st_cty_fips <- paste(
+  formatC(fips_codes$state_code, width = 2, flag = "0"), 
+  formatC(fips_codes$county_code, width = 3, flag ="0"), 
+  sep = ""
+  )
 
 # get total number of counties per state
-smmry_ctys = fips_codes %>%
+smmry_ctys <- fips_codes %>%
   group_by(state_name) %>%
   summarise(n = n(),
             num_county = length(unique(county))
@@ -347,10 +350,10 @@ accurately and fairly.
 
 ``` r
 # change capitalization of "Of" in nat_sum so left_join() works
-nat_sum[9, 1] = c("District of Columbia") 
+nat_sum[9, 1] <- c("District of Columbia") 
 
 # combine AQI table with fips table for comparison
-smmry_all = nat_sum %>%
+smmry_all <- nat_sum %>%
   left_join(smmry_ctys, by = "state_name") %>%
   mutate(percent = n_cnty_mntrs/num_county)
 
@@ -379,7 +382,7 @@ monitors and those that have the least.
 
 ``` r
 # group by counties, quantify unique SiteIDs per coutny
-byCounties = no2_subset %>% 
+byCounties <- no2_subset %>% 
   group_by(county_name) %>%
   summarise(
     n = n(), # number of total observations per county
@@ -405,7 +408,7 @@ Next, I will create a map with all of the monitors represented as
 circles and counties that have reported an AQI value of more than 100.
 
 ``` r
-monitor_loc = unique(no2_subset[,c("long", "lat")]) %>%
+monitor_loc <- unique(no2_subset[,c("long", "lat")]) %>%
   rename(Longitude = long, Latitude = lat)
 
 library(leaflet)

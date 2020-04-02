@@ -23,8 +23,11 @@ Craigslist for each city will be used.
 ### Method
 
 The overall structure of this code is a `for` loop, using the names of
-cities as indices to produce the needed URLs and query strings. Within
-this `for` loop, different web scraping methods are performed to extract
+cities as indices to produce the needed URLs and query strings. The data
+extraction methods inside the `for` loop are largely from Prof. Kaza’s
+[tutorial](https://sia.planning.unc.edu/post/2020-02-04-scraping-craigslist-posts/).
+Where appropriate, I make some modifications for this assignment. Within
+the `for` loop, different web scraping methods are performed to extract
 latitude/longitude data. Then, I find some restaurant locations through
 OpenStreetMaps, and then perform spatial operations to create the Walk
 Scores. An example of a URL and query would be:
@@ -57,7 +60,8 @@ the middle of Raleigh.
 
 ``` r
 # help from: https://cengel.github.io/R-spatial/mapping.html
-popup_info = paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_raleigh$pt_scale, 3))
+popup_info <- paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", 
+                     round(df_raleigh$pt_scale, 3))
 
 leaflet(st_transform(df_raleigh, crs = 4326)) %>% 
   addProviderTiles(providers$Stamen.TonerLines, group = "Basemap") %>%
@@ -71,7 +75,8 @@ Let’s take a look at Greensboro and
 Winston-Salem.
 
 ``` r
-popup_info2 = paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_greensboro$pt_scale, 3))
+popup_info2 <- paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", 
+                      round(df_greensboro$pt_scale, 3))
 
 leaflet(st_transform(df_greensboro, crs = 4326)) %>% 
   addProviderTiles(providers$Stamen.TonerLines, group = "Basemap") %>%
@@ -82,7 +87,8 @@ leaflet(st_transform(df_greensboro, crs = 4326)) %>%
 ![](Rojas_HW4_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ``` r
-popup_info3 = paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", round(df_winstonsalem$pt_scale, 3))
+popup_info3 <- paste0("<strong>Walk Score [-1 (low) to 5 (high)]: </strong>", 
+                      round(df_winstonsalem$pt_scale, 3))
 
 leaflet(st_transform(df_winstonsalem, crs = 4326)) %>% 
   addProviderTiles(providers$Stamen.TonerLines, group = "Basemap") %>%
