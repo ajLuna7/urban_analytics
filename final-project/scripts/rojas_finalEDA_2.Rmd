@@ -1,0 +1,219 @@
+---
+title: "Final Paper Exploratory Data Analysis"
+author: "Alfredo Rojas"
+date: "3/10/2020"
+output:
+  github_document
+---
+
+
+## Final Project for PLAN 672: Initial Summary
+
+This project will explore the relationship between food insecurity indicators in West Africa and relevant environmental and household-related variables. This preliminary paper will rely on DHS survey data. For this specific analysis, the survey data is restricted to 2011 since the DHS standardizes all their variables across survey years, i.e. the variables all have the similar code names for easy comparison. 
+
+At the outset, vaiables related to food security, according to Gubert, et al. (2010) are: per capital income, years of schooling, race and gender of HH head, urban/rural residence, access to public water supply, presence of children, total number of household inhabitants, and state of residence. 
+
+This particular project will begin exploring some of these variables within the DHS data. Later, I will try to incorporte othr related variables, such as land-use/land-cover change, NDVI, and/or climate data. As I explore the literature in more detail, I will determine what will be a feasible route to take for this final project. 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, include = FALSE)
+```
+
+### Ivory Coast Data, 2011
+
+Let's explore some of the variables in the data and see what may be of interest. Later, I will bring up what variables are commonly used in the literature and whether they are present in this particular dataset. The first thing I wanted to look for were differences between rural and urban households. This distinction will be important to see what kinds of variables impact food security indicators. For example, does living in rural or urban settings impact food security measures? If so, to what extent? These are some of the questions I begin asking as I explore the DHS data to see what variables I'm able to work with. 
+
+The `haven` package allows R to read and interpret data stored in .DTA format. In this format, categorical variables are 
+stored as `haven_labelled` class, meaning the categorical variables used in observations correspond to label names. You can insert these label names using the `haven::as_factor()` function, as seen in the `ggplot` code chunk. 
+
+Independent variables to use: HHID, hv001 (cluster number), hv012 (num of de jure HH members), hv025 (urban/rural), HV107? (years of highest education--maybe), hv209 (has fridge), hv244 (owns land), hv245 (ag area), hv270 ("wealth index").
+
+Dependent variables wil lbe: hc70_x ("height-for-age SD WHO"), 
+
+```{r read, messages = FALSE}
+library(haven)
+library(tidyverse)
+library(foreign)
+library(sf)
+
+data <- read_dta("ipums_data/ipums_dhs.dta")
+
+# NOTE: To load data, you must download both the extract's data and the DDI
+# and also set the working directory to the folder with these files (or change the path below).
+
+# if (!require("ipumsr")) stop("Reading IPUMS data into R requires the ipumsr package. It can be installed using the following command: install.packages('ipumsr')")
+# 
+# ddi <- read_ipums_ddi("ipums_data/idhs_00004.xml")
+# data <- read_ipums_micro(ddi)
+# 
+# ddi_2 <- read_ipums_ddi("ipums_data/idhs_00005.xml")
+# data2 <- read_terra_micro(ddi_2)
+# household = data %>%
+#   group_by(HHID) %>%
+#   summarise(haz = first(HWCHAZWHO))
+```
+
+Removing missing values. . . Alderman and Heady (2018) drop observations with HAZ scores below -6 and above 6. . . 
+
+Note; Cropland has some missing variables. . . have to recode some. . . 
+
+```{r clean}
+data_small <- data %>%
+  filter(
+    hwchazwho >= -600,
+    hwchazwho <= 600,
+    hwcwhzwho >= -600,
+    hwcwhzwho <= 600
+  )
+
+# create vector of relevant column names then iterate through dataframe to change -998 to NAs.
+ndvi_names <- data[grep("ndvi", names(data))] %>% names()
+for(i in ndvi_names){
+    data_small[c(i)] <- na_if(data_small[c(i)], -998)
+}
+rm(ndvi_names) # get rid of object after use
+
+# chagne temp -998 to NAs
+temp_names <- data[grep("temp", names(data))] %>% names()
+for(i in temp_names){
+  data_small[c(i)] <- na_if(data_small[c(i)], -998)
+}
+rm(temp_names) 
+
+# change crop -998 to NAs
+data_small$cropland <- na_if(data_small$cropland, -998)
+
+# keep complete observations, remove labels that `haven` preserves from .DTA file for ML model
+data_final <- data_small[complete.cases(data_small), ] %>% zap_labels() 
+
+
+```
+
+```{r mlTest, include = TRUE}
+# randomly sample 1000 rows (for convenience sake) -- ML algorithm taking a long time to converge with total dataset
+test2 <- data_small[c(12:20)]
+test2 <- as.data.frame(test2) %>% zap_labels()
+subset_data <- test2[sample(nrow(test2), 1000), ] 
+# create index to get training samples
+train_index <- createDataPartition(subset_data$hwchazwho, p=0.80, list=FALSE)
+# get test subset
+test_dataset <- subset_data[-train_index,]
+# this will be used for training subset
+train_dataset <- subset_data[train_index,]
+
+set.seed(400)
+control <- trainControl(method="cv", number = 10)
+nn_haz <- train(hwchazwho ~ ., data = train_dataset, method = "lm", trControl = control)
+
+haz_predict <- predict(nn_haz, test_dataset)
+confusionMatrix(factor(haz_predict), factor(test_dataset$hwchazwho)) # gives error: the data cannot have more levels than the reference
+
+# I don't think Confusion matrix is appropriate for continuous vars
+# table(haz_predict)
+# table(test_dataset$hwchazwho)
+# 
+# u <- union(haz_predict, test_dataset$hwchazwho)
+# t <- table(factor(haz_predict, u), factor(test_dataset$hwchazwho, u))
+# confusionMatrix(t)
+
+```
+
+## Exploratory Portion
+
+I am going to create a subset data frame to explore some immediate variables of interest. Note the use of `as_factor()` in the `ggplot()` function. 
+
+```{r}
+
+# compare urban/rural numbers, 1 = urbn, 2 = rural
+p1 <- subset_hh %>%
+  group_by(urban_rural) %>%
+  summarise(n = n()) %>%
+  ggplot(aes(x = as_factor(urban_rural), y = n)) + # as_factor a `haven` function, uses labels for categorical responses
+  geom_bar(stat = "identity")
+
+p1
+# ggsave("rural_urban_bar.png", dpi = 300)
+
+```
+
+I can start looking at the distribution of certain variables of interest. Let me start with number of household members per each household observed. 
+
+```{r}
+
+p2 <- ggplot(subset_hh, aes(num_hh_mem)) +
+  geom_density()
+
+p2
+# ggsave("hh_density.png", dpi = 300)
+```
+
+Now, I'll look at agricultural area in hectares for each household that has a farm. Note that DHS codes Unknown or Missing data as 998 and 999, respectively, so we will have to handle this. The problem is that when we remove all responses that were 998, I lose around 4,000 observations, which is a lot. One solution around this is to imputate the data for all these values once I decide which model to run.
+
+```{r}
+d2 <- subset_hh %>%
+  filter(is.na(ag_area) != TRUE, ag_area < 998) %>%
+  select(ag_area)
+
+p3 <- ggplot(d2, aes(ag_area)) +
+  geom_density()
+p3
+
+# ggsave("ag_dens.png", dpi = 300)
+```
+
+Also, I can look at the relationship between the two variables. 
+
+```{r}
+
+# plot houehold member number by agri area
+p4 <- subset_hh %>%
+  ggplot(aes(x = num_hh_mem, y = ag_area)) +
+  geom_point() +
+  geom_smooth(method = "loess")
+
+p4
+
+# ggsave("ag_hh_compare.png", dpi = 300)
+```
+
+The DHS has another variable that may be of interest: Wealth Index. This index apparently measures the relative wealth of households and categorizes them into quintiles. 
+
+```{r}
+# plot wealth vs. agricultural area
+ p5 <- subset_hh %>%
+  ggplot(aes(x = wealth_index, y = ag_area)) +
+  geom_col(aes(fill = as_factor(wealth_index)))
+
+# ggsave("ag_wealth.png", dpi = 300)
+```
+
+One thing that may be of interest is looking at the distribution of agricultural area by wealth category to see variation within a variable. The spread of the data is interesting. The different catgories seem to follow a similar pattern but in different magnitudes. 
+
+```{r}
+
+# compare distribution of agricultural area across wealth indices
+p6 <- subset_hh %>%
+  ggplot(aes(x = ag_area, colour = as_factor(wealth_index))) +
+  geom_freqpoly(binwidth = 50)
+
+# ggsave("ag_wealth_density.png", dpi = 300)
+```
+
+
+### Geospatial
+
+Exploring the shapefile that comes with the 2011-12 data for Côte d'Ivoire.
+
+```{r}
+shp_2011 <- st_read(geo_path)
+
+plot(st_geometry(shp_2011)) 
+
+head(shp_2011)
+
+
+```
+
+The shapefile has the field `DHSCLUST` which corresponds to the `hv001` which is the cluster number in the hosuehold-level dataset. 
+
