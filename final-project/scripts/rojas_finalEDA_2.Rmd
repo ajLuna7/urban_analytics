@@ -15,6 +15,12 @@ At the outset, vaiables related to food security, according to Gubert, et al. (2
 
 This particular project will begin exploring some of these variables within the DHS data. Later, I will try to incorporte othr related variables, such as land-use/land-cover change, NDVI, and/or climate data. As I explore the literature in more detail, I will determine what will be a feasible route to take for this final project. 
 
+## What is an HAZ score
+
+Height for weight z-scores, or standard deviation scores, are indices to measure linear growth potential in children, where lower scores indicate stunting as a result of poor health conditions and undernutrition (see, [WHO](https://www.who.int/nutgrowthdb/about/introduction/en/index2.html) article).
+
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, include = FALSE)
@@ -32,26 +38,32 @@ Independent variables to use: HHID, hv001 (cluster number), hv012 (num of de jur
 Dependent variables wil lbe: hc70_x ("height-for-age SD WHO"), 
 
 ```{r read, messages = FALSE}
+
 library(haven)
 library(tidyverse)
 library(foreign)
 library(sf)
+library(dplyr)
+library(plyr)
+library(ggplot2)
+# library(ipumsr)
 
-data <- read_dta("ipums_data/ipums_dhs.dta")
-
-# NOTE: To load data, you must download both the extract's data and the DDI
-# and also set the working directory to the folder with these files (or change the path below).
-
-# if (!require("ipumsr")) stop("Reading IPUMS data into R requires the ipumsr package. It can be installed using the following command: install.packages('ipumsr')")
+# vars_that_should_be_doubles <- c("NDVI", "CROPLAND", "PRECIP", "TEMPMAX")
 # 
-# ddi <- read_ipums_ddi("ipums_data/idhs_00004.xml")
+# ddi <- read_ipums_ddi("ipums_data/idhs_00007.xml")
+# ddi$var_info <- ddi$var_info %>% 
+#   mutate(
+#     var_type = if_else(
+#       var_name %in% vars_that_should_be_doubles,
+#       "double",
+#       var_type)
+#   )
 # data <- read_ipums_micro(ddi)
-# 
-# ddi_2 <- read_ipums_ddi("ipums_data/idhs_00005.xml")
-# data2 <- read_terra_micro(ddi_2)
-# household = data %>%
-#   group_by(HHID) %>%
-#   summarise(haz = first(HWCHAZWHO))
+
+
+data <- read_dta("ipums_data/idhs_00007.dta")
+data_bf <- read_dta("ipums_data/ipums_bf2010.dta")
+
 ```
 
 Removing missing values. . . Alderman and Heady (2018) drop observations with HAZ scores below -6 and above 6. . . 
@@ -65,49 +77,202 @@ data_small <- data %>%
     hwchazwho <= 600,
     hwcwhzwho >= -600,
     hwcwhzwho <= 600
-  )
+  ) %>%
+  select(-c(hwcwazwho, hwcwhzwho))
 
 # create vector of relevant column names then iterate through dataframe to change -998 to NAs.
-ndvi_names <- data[grep("ndvi", names(data))] %>% names()
+ndvi_names <- data[grep("ndvi_", names(data))] %>% names()
 for(i in ndvi_names){
-    data_small[c(i)] <- na_if(data_small[c(i)], -998)
+    data_small[c(i)] <- na_if(data_small[c(i)], -998) # na_if takes vector
 }
-rm(ndvi_names) # get rid of object after use
 
 # chagne temp -998 to NAs
-temp_names <- data[grep("temp", names(data))] %>% names()
+temp_names <- data[grep("tempmax_", names(data))] %>% names()
 for(i in temp_names){
   data_small[c(i)] <- na_if(data_small[c(i)], -998)
 }
-rm(temp_names) 
+
+# remove precip -998 and replace with NAs
+precip_names <- data[grep("precip_", names(data))] %>% names()
+for(i in precip_names){
+  data_small[c(i)] <- na_if(data_small[c(i)], -998)
+}
 
 # change crop -998 to NAs
 data_small$cropland <- na_if(data_small$cropland, -998)
 
 # keep complete observations, remove labels that `haven` preserves from .DTA file for ML model
-data_final <- data_small[complete.cases(data_small), ] %>% zap_labels() 
+data_small <- data_small[complete.cases(data_small), ] %>% zap_labels() 
 
+# final data for ML model. . . 
+data_final <- data_small %>%
+  as.data.frame() %>%
+  mutate(
+    ndvi_mean = rowMeans(data_small[ndvi_names]),
+    temp_mean = rowMeans(data_small[temp_names]),
+    precip_mean = rowMeans(data_small[precip_names]),
+    stunting = if_else((hwchazwho/100) < -2, 1, 0)
+  ) %>% 
+  select(-c("ndvi", "precip", "tempmax", "hhresident", ndvi_names, temp_names, precip_names)) %>%
+  select(-c(1:5, 7:8, 10, 11, 12))
 
 ```
 
+## Looking at the distribution of height for age scores
+
+```{r haz-dens}
+
+group_med = ddply(data_small, "urbanhh", summarise, hh.med = median(hwchazwho/100))
+group_med$urbanhh <- as.factor(group_med$urbanhh)
+
+data_small$urbanhh <- as.factor(data_small$urbanhh)
+
+ggplot(data_small, mapping = aes(x = hwchazwho/100, fill = urbanhh, group = urbanhh)) + 
+  geom_density(size = 0.5, alpha = 1/3) +
+  labs(
+    title = "Density of Height-for-Age-Z-Scores (HAZ) in Urban and Rural Areas, Côte d'Ivoire",
+    x = "Density",
+    y = "HAZ Score"
+  ) +
+  scale_fill_discrete(name = "Residence", labels = c("Urban", "Rural")) +
+  geom_vline(data = group_med, 
+             mapping = aes(xintercept = hh.med, color = urbanhh),
+             show.legend = F, linetype = "dashed")
+
+```
+
+## Looking at the distribution for proportion of crop land around clusters
+
+```{r crop-dens}
+
+crop_land_mean <- ddply(data_small, "urbanhh", summarise, cl_mean = mean(cropland))
+crop_land_mean$urbanhh <- as.factor(crop_land_mean$urbanhh)
+data_small %>%
+  ggplot(mapping = aes(x = cropland, fill = urbanhh, group = urbanhh)) +
+  geom_density(alpha = 1/3) +
+  labs(
+    title = "Density of cropland in Urban and Rural Areas",
+    subtitle = "Proportion of cropland within 10-km buffer of cluster",
+    x = "Density",
+    y = "Proportion of cropland"
+  ) +
+  scale_fill_discrete(name = "Residence", labels = c("Urban", "Rural")) +
+  geom_vline(data = crop_land_mean, 
+             mapping = aes(xintercept = cl_mean, color = urbanhh),
+             show.legend = F)
+  
+```
+
+## Scatter plot between cropland and HAZ
+
+```{r crop-haz}
+data_small %>%
+  ggplot(mapping = aes(x = scale(cropland), y = scale(hwchazwho/100))) +
+  geom_point() +
+  geom_abline()
+
+data_final %>%
+  filter(hwchazwho/100 < 0) %>%
+  ggplot(mapping = aes(x = scale(temp_mean), y = scale(hwchazwho/100))) +
+  geom_point() +
+  geom_abline()
+
+data_final %>%
+  ggplot(aes(dhsid)) +
+  geom_col()
+
+```
+
+
+## Exploring NDVI and temperature values
+
+So, I'm thinking, for NDVI, since they have 60 months BEFORE survey data, I can take the first 12 months, calculate the mean annual total NDVI (MATN) and then take the 12 months from the survey date to do the same thing. Then I can subtract T2 from T1, which can be my variable. . . Maybe I can do this for all environmental variables. . . SO these variables are representing changes from 2006 to 2011. Or maybe I can just take the average for all months.
+
+Maybe I have to add min. . . 
+
+Plotting for one CLUSTER (WHERE? -- maybe show three CLUSTERS, South, Central, North), shows the cyclic nature of NDVI over time. I am able to identify the month, but I have to re-download the data again. 
+
+```{r ndvi-temp}
+
+data_final %>%
+  ggplot(mapping = aes(x = precip_mean, y = ndvi_mean)) +
+  geom_point() +
+  geom_smooth()
+
+ndvi_series <- data_small %>%
+  select(dhsid, ndvi_names) %>%
+  group_by(dhsid) %>%
+  summarise_all(first)
+
+# plotting an individual cluster over time. . . 
+ndvi_series[ndvi_series$dhsid == "CI201200000301", ] %>%
+  pivot_longer(-c(dhsid, dhsid), names_to = "month", values_to = "ndvi") %>%
+  ggplot(mapping = aes(x = month, y = ndvi, group = 1)) +
+  geom_point() + 
+  geom_line() 
+
+```
+
+```{r ndvi-total}
+
+ndvi_total <- data %>%
+  select(dhsid, ndvi_names) %>%
+  left_join(regions, by = c("dhsid" = "DHSID")) %>%
+  st_as_sf() %>%
+  st_drop_geometry() %>% # drop geom only works with `sf` objects
+  group_by(dhsid) %>%
+  summarise_all(first) # first is a function first()
+ 
+ndvi_total[ndvi_total$DHSREGNA == "Ville D'Abidjan", ][1, ] %>%
+  pivot_longer(-c(dhsid, DHSREGNA), names_to = "month", values_to = "ndvi") %>%
+  ggplot(mapping = aes(x = month, y = ndvi, group = 1)) +
+  geom_point() + 
+  geom_line()
+
+ndvi_total[ndvi_total$DHSREGNA == "Nord-Ouest", ][6, ] %>%
+  pivot_longer(-c(dhsid, DHSREGNA), names_to = "month", values_to = "ndvi") %>%
+  ggplot(mapping = aes(x = month, y = ndvi, group = 1)) +
+  geom_point() + 
+  geom_line()
+
+```
+
+
 ```{r mlTest, include = TRUE}
-# randomly sample 1000 rows (for convenience sake) -- ML algorithm taking a long time to converge with total dataset
-test2 <- data_small[c(12:20)]
-test2 <- as.data.frame(test2) %>% zap_labels()
-subset_data <- test2[sample(nrow(test2), 1000), ] 
+library(caret)
+
+data_final2 <- rbind(data_final, data_final_bf)
+
+data_final2$urbanhh <- as.factor(data_final2$urbanhh)
+# test2$hhresident <- as.factor(test2$hhresident)  
+data_final2$aglandyn <- as.factor(data_final2$aglandyn)
+data_final2$wealthqhh <- as.factor(data_final2$wealthqhh)
+data_final2$stunting <- as.factor(data_final2$stunting)
+
+# saveRDS(subset_data, "test.rds") # create test data 
+
+data_ready <- data_final2  %>% 
+  zap_label() %>%
+  select(-c("hhid", "dhsid", "hwchazwho"))
+rm(data_final2)
+
 # create index to get training samples
-train_index <- createDataPartition(subset_data$hwchazwho, p=0.80, list=FALSE)
+train_index <- createDataPartition(data_ready$stunting, p=0.80, list=FALSE)
 # get test subset
-test_dataset <- subset_data[-train_index,]
+test_dataset <- data_ready[-train_index,]
 # this will be used for training subset
-train_dataset <- subset_data[train_index,]
+train_dataset <- data_ready[train_index,]
 
-set.seed(400)
-control <- trainControl(method="cv", number = 10)
-nn_haz <- train(hwchazwho ~ ., data = train_dataset, method = "lm", trControl = control)
+set.seed(12)
+control <- trainControl(method="repeatedcv", repeats =3, 
+                        classProbs= F, summaryFunction = multiClassSummary) 
+# classProbs = F avoids the error of syntactically valid names. . . I don't get it though. . . 
+# control <- trainControl(method="cv", number = 10)
+rf_haz <- train(stunting ~ ., data = train_dataset, method = "rf", 
+                trControl = control, preProcess = c("center", "scale"))
 
-haz_predict <- predict(nn_haz, test_dataset)
-confusionMatrix(factor(haz_predict), factor(test_dataset$hwchazwho)) # gives error: the data cannot have more levels than the reference
+haz_predict <- predict(rf_haz, test_dataset)
+confusionMatrix(factor(haz_predict), factor(test_dataset$stunting)) # gives error: the data cannot have more levels than the reference
 
 # I don't think Confusion matrix is appropriate for continuous vars
 # table(haz_predict)
@@ -206,11 +371,16 @@ p6 <- subset_hh %>%
 Exploring the shapefile that comes with the 2011-12 data for Côte d'Ivoire.
 
 ```{r}
+library(sf)
+geo_path <- file.path("CI_Data", "geo-data-2011", "CIGE61FL", "CIGE61FL.shp")
 shp_2011 <- st_read(geo_path)
 
 plot(st_geometry(shp_2011)) 
 
 head(shp_2011)
+
+regions <- shp_2011 %>%
+  select(DHSID, DHSREGNA)
 
 
 ```
