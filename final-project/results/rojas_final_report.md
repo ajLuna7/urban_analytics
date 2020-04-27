@@ -1,4 +1,4 @@
-Final Paper Exploratory Data Analysis
+Final Paper
 ================
 Alfredo Rojas
 4/27/2020
