@@ -65,7 +65,7 @@ malnutrition or any protective factors have not manifested until after
 analsis, I do not differentiate between age. But as I develop this
 project, this separation will be necessary.
 
-## Ivory Coast (2011) and Burkina Faso (2010) Data
+## Burkina Faso (2010) Data and Ivory Coast (2011) 
 
 I chose to compare the 2010 and 2011 data for Burkina Faso and Ivory
 Coast, respectively. While it should not be underestimated that regional
