@@ -50,7 +50,7 @@ DHS-IPUMS data, I have access to:
 The dependent variable will be HAZ score, while the rest will act as
 explanatory variables.
 
-## What is an HAZ score
+## What is an HAZ score?
 
 Height for weight z-scores, or standard deviation scores, are indices to
 measure linear growth potential in children under age 5, where lower
@@ -65,7 +65,7 @@ malnutrition or any protective factors have not manifested until after
 analsis, I do not differentiate between age. But as I develop this
 project, this separation will be necessary.
 
-## Burkina Faso (2010) Data and Ivory Coast (2011) 
+## Burkina Faso (2010) and Ivory Coast (2011) data
 
 I chose to compare the 2010 and 2011 data for Burkina Faso and Ivory
 Coast, respectively. While it should not be underestimated that regional
@@ -223,7 +223,7 @@ scores.
 
 ![](rojas_final_report_files/figure-gfm/haz-temp-ndvi-1.png)<!-- -->![](rojas_final_report_files/figure-gfm/haz-temp-ndvi-2.png)<!-- -->
 
-## Concluding Remarks
+## Concluding remarks
 
 In this project, I explored factors driving childhood stunting using
 DHS-IPUMS data to move toward a predictive model of low HAZ scores.
