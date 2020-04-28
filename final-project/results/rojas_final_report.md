@@ -159,7 +159,7 @@ rf_haz <- train(stunting ~ .,
                 preProcess = c("center", "scale"))
 
 haz_predict <- predict(rf_haz, test_dataset)
-confusionMatrix(factor(haz_predict), factor(test_dataset$stunting)) # gives error: the data cannot have more levels than the reference
+confusionMatrix(factor(haz_predict), factor(test_dataset$stunting)) 
 ```
 
     ## Confusion Matrix and Statistics
