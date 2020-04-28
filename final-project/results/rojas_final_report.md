@@ -8,7 +8,7 @@ Alfredo Rojas
 This preliminary project will work towards building a predictive model
 for food insecurity indicators in West Africa, using relevant
 environmental and household-related variables, as well as relying on a
-machine learning approach. This preliminary paper will rely on DHS-IPUMS
+machine learning approach. This preliminary paper will rely on [DHS-IPUMS](https://www.idhsdata.org/idhs/) (Boyle, King, and Sobek 2019)
 survey and environmental data for Ivory Coast and Burkina Faso. For this
 specific analysis, the survey data is restricted to 2011 and 2010,
 respectively. Since the DHS standardizes all their variables across
@@ -245,6 +245,9 @@ Bakhtsiyarava, Maryia, Kathryn Grace, and Raphael J. Nawrotzki. 2017.
 “Climate, Birth Weight, and Agricultural Livelihoods in Kenya and
 Mali.” American Journal of Public Health 108 (S2): S144–50.
 <https://doi.org/10.2105/AJPH.2017.304128>.
+
+Boyle, Elizabeth Heger, Miriam King and Matthew Sobek. IPUMS-Demographic and Health Surveys: Version 7 [dataset]. Minnesota Population Center and ICF International, 2019. 
+<https://doi.org/10.18128/D080.V7>
 
 Gubert, Muriel Bauermann, and Maria Helena D’Aquino Benício. 2010. “Use
 of a Predictive Model for Food Insecurity Estimates in Brazil.” Archivos
