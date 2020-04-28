@@ -149,8 +149,8 @@ train_dataset <- data_ready[train_index,]
 set.seed(12)
 control <- trainControl(method ="repeatedcv", 
                         repeats = 3, 
-                        classProbs = F, # classProbs = F avoids the error of syntactically valid names
-                        summaryFunction = multiClassSummary)        # I don't understand, though
+                        classProbs = F, 
+                        summaryFunction = multiClassSummary)      
 
 rf_haz <- train(stunting ~ ., 
                 data = train_dataset, 
