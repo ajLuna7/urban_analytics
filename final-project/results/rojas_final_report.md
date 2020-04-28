@@ -8,8 +8,8 @@ Alfredo Rojas
 This preliminary project will work towards building a predictive model
 for food insecurity indicators in West Africa, using relevant
 environmental and household-related variables, as well as relying on a
-machine learning approach. This preliminary paper will rely on [DHS-IPUMS](https://www.idhsdata.org/idhs/) (Boyle, King, and Sobek 2019)
-survey and environmental data for Ivory Coast and Burkina Faso. For this
+machine learning approach. This preliminary paper will rely on [DHS-IPUMS](https://www.idhsdata.org/idhs/)
+survey and environmental data for Ivory Coast and Burkina Faso (Boyle, King, and Sobek 2019). For this
 specific analysis, the survey data is restricted to 2011 and 2010,
 respectively. Since the DHS standardizes all their variables across
 survey years, i.e. the variables all have the similar code names for
