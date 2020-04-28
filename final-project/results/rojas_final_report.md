@@ -16,7 +16,7 @@ survey years, i.e. the variables all have the similar code names for
 easy comparison.
 
 One way to measure food insecurity in a region is to look at its
-consequences for health. One way to measure these consequences is by
+consequences for health. For example, researchers have measured these consequences by
 looking at malnutrition in children, which leads to growth faltering, a
 popular overall indicator of a child’s health, as well as an indicator
 of social inequalities (de Onis and Branca 2016). Growth faltering is
