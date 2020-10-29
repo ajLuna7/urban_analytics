@@ -76,8 +76,8 @@ explicitly account for these differences in this preliminary stage.
 Below, I show all of the GPS points of the sample clusters for these two
 surveys. GPS points are randomly offset by approximately 5 to 10
 kilometers for rural households to ensure anonymity. Note that the data
-includes one erroneous point (perhaps a displaced point) that appears in
-the ocean\!
+includes points in the ocean, which is a result of clusters whose GPS points
+could not be obtained.
 
 ![](rojas_final_report_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
