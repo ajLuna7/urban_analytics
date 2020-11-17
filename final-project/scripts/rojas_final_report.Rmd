@@ -56,7 +56,7 @@ data_bf <- read_dta("ipums_data/ipums_bf2010.dta")
 
 ```
 
-Below, I show all of the GPS points of the sample clusters for these two surveys. GPS points are randomly offset by approximately 5 to 10 kilometers for rural households to ensure anonymity. Note that the data includes one erroneous point (perhaps a displaced point) that appears in the ocean! 
+Below, I show all of the GPS points of the sample clusters for these two surveys. GPS points are randomly offset by approximately 5 to 10 kilometers for rural households to ensure anonymity. Note that the data includes points that appear in the ocean, which indicate these GPS points were not able to be collected (according to DHS). 
 
 ```{r, messages = FALSE, results = 'hide'}
 ci_geo_path <- file.path("CI_Data", "geo-data-2011", "CIGE61FL", "CIGE61FL.shp")
