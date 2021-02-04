@@ -68,23 +68,13 @@ separation will be necessary.
 ## Burkina Faso (2010) and Ivory Coast (2011) data
 
 I chose to compare the 2010 and 2011 data for Burkina Faso and Ivory
-Coast (Côte d’Ivoire in French), respectively. While it should not be
+Coast (C�te d'Ivoire in French)), respectively. While it should not be
 underestimated that regional differences exist between the tropical,
 Sudanian savanna, and Sahelian regions going south to north, I do not
 explicitly account for these differences in this preliminary stage.
 
-Below, I show all of the GPS points of the sample clusters for these two
-surveys. GPS points are randomly offset by approximately 5 to 10
-kilometers for rural households to ensure anonymity. Note that the data
-<<<<<<< HEAD
-includes points that appear in the ocean, which indicate these GPS points were not able to be collected (according to DHS).
-includes points in the ocean, which is a result of clusters whose GPS points
-could not be obtained.
+Below, I show all of the GPS points of the sample clusters for these two surveys. GPS points are randomly offset by approximately 5 to 10 kilometers for rural households to ensure anonymity. Note that the data includes points that appear in the ocean, which indicate these GPS points were not able to be collected (according to DHS).
 
-=======
-includes points in the ocean, which is a result of clusters whose GPS points
-could not be obtained.
->>>>>>> 74abbc8435c53c121a746b3878d5451107490f68
 
 ![](rojas_final_report_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
