@@ -13,12 +13,12 @@ machine learning approach. This preliminary paper will rely on
 data for Burkina Faso and Ivory Coast (Boyle, King, and Sobek 2019). For
 this specific analysis, the survey data is restricted to 2010 and 2011.
 Since the DHS standardizes all their variables across survey years,
-i.e. the variables all have similar code names for easy comparison.
+i.e.the variables all have similar code names for easy comparison.
 
 One way to measure food insecurity in a region is to look at its
 consequences for health. For example, one method to measure these
 consequences is by looking at malnutrition in children, which leads to
-growth faltering, a popular overall indicator of a child’s health, as
+growth faltering, a popular overall indicator of a child's health, as
 well as an indicator of social inequalities (de Onis and Branca 2016).
 Growth faltering is measured in height-for-age z-score (HAZ), where
 scores below -2 mean stunted growth. In West and Central Africa, nearly
