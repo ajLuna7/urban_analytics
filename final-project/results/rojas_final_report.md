@@ -80,20 +80,9 @@ Below, I show all of the GPS points of the sample clusters for these two surveys
 
 ## Methods
 
-This analysis uses the R statistical programming language to clean,
-process, visualize, and analyze the DHS-IPUMS data. The predictive model
-will rely on a Random Forest binary classifier, testing the importance
-of each explanatory variable in predicting whether a child has an HAZ
-below -2 or not. I rely on the `caret` package to construct the model.
-By nature of constructing a binary classifier, I categorized HAZ scores
-below -2 as “1” and anything above as “0”. All HAZ values above 6 and
-below -6 are dropped.
+This analysis uses the R statistical programming language to clean, process, visualize, and analyze the DHS-IPUMS data. The predictive model will rely on a Random Forest binary classifier, testing the importance of each explanatory variable in predicting whether a child has an HAZ below -2 or not. I rely on the `caret` package to construct the model. By nature of constructing a binary classifier, I categorized HAZ scores below -2 as "1" and anything above as "0". All HAZ values above 6 and below -6 are dropped.
 
-The environmental variables, like maximum monthly NDVI, precipitation,
-and temperature are provided by IPUMS for 60 months before the survey
-month and 11 months after at the cluster level. This analysis takes the
-total average for these variables. For individual HAZ values, there are
-a total of 10,164 observations.
+The environmental variables, like maximum monthly NDVI, precipitation, and temperature are provided by IPUMS for 60 months before the survey month and 11 months after at the cluster level. This analysis takes the total average for these variables. For individual HAZ values, there are a total of 10,164 observations.
 
 ## Looking at the distribution of height for age scores
 
@@ -113,9 +102,9 @@ Another consideration is to explore the amount of cropland that exists
 around survey sites across urban and rural areas. As would be expected,
 the mean proportion of cropland is lower in urban areas than in rural
 areas. However, the rural and urban distributions are very different for
-Ivory Coast than for Burkina Faso. Ivory Coast’s distribution for rural
+Ivory Coast than for Burkina Faso. Ivory Coast's distribution for rural
 areas seems to gravitate around the mean, whereas in the urban
-distribution you find more distinct peaks. In Burkina Faso’s
+distribution you find more distinct peaks. In Burkina Faso's
 distribution, both urban and rural seem to follow a similar pattern.
 
 ![](rojas_final_report_files/figure-gfm/crop-dens-1.png)<!-- -->
@@ -189,8 +178,8 @@ confusionMatrix(factor(haz_predict), factor(test_dataset$stunting))
     ## 
 
 Overall, the accuracy of the model is not great at around 67%.
-Additonally, there was a lot of confusion where a lot of 0’s were
-classified as 1’s. Therefore, the model is not very good. According to
+Additonally, there was a lot of confusion where a lot of 0s were
+classified as 1s. Therefore, the model is not very good. According to
 the below graph, the most important variables were many of the
 environmental variables, like NDVI, precipitation, temperature, and
 amount of cropland. Sensitivity to environmental variables is consistent
@@ -238,27 +227,14 @@ high levels of importance for the classifier.
 
 ## References
 
-Alderman, Harold, and Derek Headey. 2018. “The Timing of Growth
-Faltering Has Important Implications for Observational Analyses of the
-Underlying Determinants of Nutrition Outcomes.” PLOS ONE 13 (4):
-e0195904. <https://doi.org/10.1371/journal.pone.0195904>.
+Alderman, Harold, and Derek Headey. 2018. "The Timing of Growth Faltering Has Important Implications for Observational Analyses of the Underlying Determinants of Nutrition Outcomes." PLOS ONE 13 (4): e0195904. <https://doi.org/10.1371/journal.pone.0195904>.
 
-Bakhtsiyarava, Maryia, Kathryn Grace, and Raphael J. Nawrotzki. 2017.
-“Climate, Birth Weight, and Agricultural Livelihoods in Kenya and
-Mali.” American Journal of Public Health 108 (S2): S144–50.
-<https://doi.org/10.2105/AJPH.2017.304128>.
+Bakhtsiyarava, Maryia, Kathryn Grace, and Raphael J. Nawrotzki. 2017. "Climate, Birth Weight, and Agricultural Livelihoods in Kenya and Mali." American Journal of Public Health 108 (S2): S144-50. <https://doi.org/10.2105/AJPH.2017.304128>.
 
-Boyle, Elizabeth Heger, Miriam King and Matthew Sobek. IPUMS-Demographic
-and Health Surveys: Version 7 \[dataset\]. Minnesota Population Center
-and ICF International, 2019. <https://doi.org/10.18128/D080.V7>
+Boyle, Elizabeth Heger, Miriam King and Matthew Sobek. IPUMS-Demographic and Health Surveys: Version 7 [dataset]. Minnesota Population Center and ICF International, 2019. <https://doi.org/10.18128/D080.V7>
 
-Gubert, Muriel Bauermann, and Maria Helena D’Aquino Benício. 2010. “Use
-of a Predictive Model for Food Insecurity Estimates in Brazil.” Archivos
-Latinoamericanos De Nutricion 7.
+Gubert, Muriel Bauermann, and Maria Helena D'Aquino Ben�cio. 2010. "Use of a Predictive Model for Food Insecurity Estimates in Brazil." Archivos Latinoamericanos De Nutricion 7.
 
-Onis, Mercedes de, and Francesco Branca. 2016. “Childhood Stunting: A
-Global Perspective.” Maternal & Child Nutrition 12 (S1): 12–26.
-<https://doi.org/10.1111/mcn.12231>.
+Onis, Mercedes de, and Francesco Branca. 2016. "Childhood Stunting: A Global Perspective." Maternal & Child Nutrition 12 (S1): 12-26. <https://doi.org/10.1111/mcn.12231>.
 
-UNICEF. 2020. Source:
-<https://data.unicef.org/topic/nutrition/malnutrition/>
+UNICEF. 2020. Source: <https://data.unicef.org/topic/nutrition/malnutrition/>
